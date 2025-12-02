@@ -56,7 +56,7 @@ CREATE TABLE public.orders (
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'shipped', 'completed', 'cancelled', 'refunded')),
   total_amount DECIMAL(10, 2) NOT NULL CHECK (total_amount >= 0),
   currency TEXT DEFAULT 'USD',
-  stripe_payment_intent_id TEXT,
+  payment_transaction_id TEXT, -- PayChangu tx_ref or other payment provider transaction ID
   shipping_address JSONB,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

@@ -131,6 +131,41 @@ export interface Database {
                     updated_at?: string
                 }
             }
+            orders: {
+                Row: {
+                    id: string
+                    user_id: string | null
+                    status: 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled' | 'refunded'
+                    total_amount: number
+                    currency: string
+                    payment_transaction_id: string | null
+                    shipping_address: Json | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id?: string | null
+                    status?: 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled' | 'refunded'
+                    total_amount: number
+                    currency?: string
+                    payment_transaction_id?: string | null
+                    shipping_address?: Json | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string | null
+                    status?: 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled' | 'refunded'
+                    total_amount?: number
+                    currency?: string
+                    payment_transaction_id?: string | null
+                    shipping_address?: Json | null
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ export default async function AdminLayout({
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single() as { data: { role: 'admin' | 'customer' } | null, error: any }
+        .single() as { data: { role: 'admin' | 'customer' } | null, error: unknown }
 
     if (!profile || profile.role !== 'admin') {
         redirect('/')

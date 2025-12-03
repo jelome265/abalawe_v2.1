@@ -52,9 +52,9 @@ export default function CheckoutPage() {
                 throw new Error('No checkout URL returned')
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error)
-            setMessage(error.message)
+            setMessage(error instanceof Error ? error.message : 'An error occurred')
             setIsLoading(false)
         }
     }

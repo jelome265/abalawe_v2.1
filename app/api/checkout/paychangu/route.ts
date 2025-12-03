@@ -100,7 +100,7 @@ export async function POST(req: Request) {
             throw new Error('Payment initiation returned unsuccessful status')
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('PayChangu Checkout Error:', error)
         // Don't expose detailed error messages to client for security
         return NextResponse.json(

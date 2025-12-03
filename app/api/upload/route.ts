@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json()
-        const { filename, contentType, size } = uploadSchema.parse(body)
+        const { filename, contentType: _contentType, size: _size } = uploadSchema.parse(body)
 
         // Generate a unique path
         const path = `${user.id}/${Date.now()}-${filename}`

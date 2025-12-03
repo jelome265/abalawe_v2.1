@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
     const supabase = await createClient()
     await supabase.auth.signOut()
     return redirect('/')

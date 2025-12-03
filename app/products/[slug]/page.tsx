@@ -20,14 +20,14 @@ async function getProduct(slug: string): Promise<Product | null> {
         .from('products')
         .select('*')
         .eq('slug', slug)
-        .single() as { data: any, error: any }
+        .single() as { data: unknown, error: unknown }
 
     if (error) {
         console.error('Error fetching product:', error)
         return null
     }
 
-    return data
+    return data as Product | null
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {

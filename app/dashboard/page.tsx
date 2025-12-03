@@ -16,7 +16,7 @@ export default async function DashboardPage() {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single()
+        .single() as { data: { full_name: string } | null, error: any }
 
     return (
         <div className="container px-4 md:px-6 py-12">

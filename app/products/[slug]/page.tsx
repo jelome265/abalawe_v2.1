@@ -20,7 +20,7 @@ async function getProduct(slug: string): Promise<Product | null> {
         .from('products')
         .select('*')
         .eq('slug', slug)
-        .single()
+        .single() as { data: any, error: any }
 
     if (error) {
         console.error('Error fetching product:', error)

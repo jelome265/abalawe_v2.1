@@ -30,7 +30,7 @@ export default function SettingsPage() {
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
-                .single()
+                .single() as { data: any, error: any }
 
             if (data) {
                 setProfile(data)
@@ -47,8 +47,8 @@ export default function SettingsPage() {
         setIsSaving(true)
         setMessage(null)
 
-        const { error } = await supabase
-            .from('profiles')
+        const { error } = await (supabase
+            .from('profiles') as any)
             .update({
                 full_name: fullName,
                 updated_at: new Date().toISOString(),

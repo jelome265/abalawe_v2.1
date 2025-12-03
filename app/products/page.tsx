@@ -12,7 +12,7 @@ export default async function ProductsPage() {
         .from('products')
         .select('*')
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false }) as { data: any[] | null, error: any }
 
     if (error) {
         console.error('Error fetching products:', error)

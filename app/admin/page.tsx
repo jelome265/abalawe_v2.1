@@ -21,9 +21,9 @@ export default async function AdminDashboard() {
     }
 
     // Fetch some stats (mocked for now or simple counts)
-    const { count: productCount } = await supabase.from('products').select('*', { count: 'exact', head: true })
-    const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true })
-    const { count: orderCount } = await supabase.from('orders').select('*', { count: 'exact', head: true })
+    const { count: productCount } = await (supabase.from('products') as any).select('*', { count: 'exact', head: true })
+    const { count: userCount } = await (supabase.from('profiles') as any).select('*', { count: 'exact', head: true })
+    const { count: orderCount } = await (supabase.from('orders') as any).select('*', { count: 'exact', head: true })
 
     return (
         <div className="space-y-8">

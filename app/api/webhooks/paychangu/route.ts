@@ -20,7 +20,11 @@ export async function POST(req: Request) {
             .update(body)
             .digest('hex')
 
-        if (signature !== expectedSignature) {
+        // Use timingSafeEqual to prevent timing attacks
+        const signatureBuffer = Buffer.from(signature)
+        const expectedBuffer = Buffer.from(expectedSignature)
+
+        if (signatureBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)) {
             console.error('Invalid PayChangu webhook signature')
             return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
         }
@@ -38,13 +42,21 @@ export async function POST(req: Request) {
                 // Find order by PayChangu tx_ref
                 const { data: order } = await supabase
                     .from('orders')
-                    .select('id')
+                    .select('*') // Select all to avoid type inference issues with specific columns
                     .eq('payment_transaction_id', tx_ref)
-                    .single()
+                    .single() as { data: { id: string; total_amount: number; currency: string } | null, error: any }
 
                 if (order) {
-                    await supabase
-                        .from('orders')
+                    // Verify amount matches
+                    const paidAmount = verification.data.amount
+                    // Allow small float difference or ensure exact match depending on API
+                    if (Math.abs(paidAmount - order.total_amount) > 0.01) {
+                        console.error(`Amount mismatch: Order ${order.total_amount}, Paid ${paidAmount}`)
+                        return NextResponse.json({ error: 'Amount mismatch' }, { status: 400 })
+                    }
+
+                    await (supabase
+                        .from('orders') as any)
                         .update({ status: 'paid' })
                         .eq('id', order.id)
                 }

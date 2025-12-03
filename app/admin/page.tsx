@@ -1,8 +1,24 @@
 import { createClient } from '@/utils/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { redirect } from 'next/navigation'
 
 export default async function AdminDashboard() {
     const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        redirect('/login')
+    }
+
+    // Check for admin role (adjust based on your actual role implementation)
+    // Assuming 'admin' role in app_metadata or user_metadata
+    const isAdmin = user.app_metadata?.role === 'admin' || user.user_metadata?.role === 'admin'
+
+    if (!isAdmin) {
+        // Redirect non-admins to home or dashboard
+        redirect('/')
+    }
 
     // Fetch some stats (mocked for now or simple counts)
     const { count: productCount } = await supabase.from('products').select('*', { count: 'exact', head: true })

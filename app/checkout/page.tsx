@@ -25,34 +25,16 @@ export default function CheckoutPage() {
                 return
             }
 
-            // 1. Create Order in Supabase
-            const { data: order, error: orderError } = await supabase
-                .from('orders')
-                .insert({
-                    user_id: user.id,
-                    total_amount: cartTotal,
-                    status: 'pending',
-                    currency: 'MWK',
-                })
-                .select()
-                .single()
-
-            if (orderError) {
-                console.error('Order creation error:', orderError)
-                throw new Error('Failed to create order: ' + orderError.message)
-            }
-
-            if (!order) {
-                throw new Error('Order was not created')
-            }
-
-            // 2. Initiate PayChangu Payment via Server Action/API Route
+            // Initiate PayChangu Payment via Server Action/API Route
+            // We send items to the server to calculate the total amount securely
             const response = await fetch('/api/checkout/paychangu', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    orderId: order.id,
-                    amount: cartTotal,
+                    items: items.map(item => ({
+                        id: item.id,
+                        quantity: item.quantity
+                    })),
                     email: user.email,
                 }),
             })
@@ -63,7 +45,7 @@ export default function CheckoutPage() {
                 throw new Error(data.error || 'Payment failed')
             }
 
-            // 3. Redirect to PayChangu Checkout URL
+            // Redirect to PayChangu Checkout URL
             if (data.checkout_url) {
                 window.location.href = data.checkout_url
             } else {

@@ -32,24 +32,7 @@ export default function LoginPage() {
         }
     }
 
-    const handleMagicLink = async () => {
-        setIsLoading(true)
-        setMessage(null)
 
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: `${location.origin}/auth/callback`,
-            },
-        })
-
-        if (error) {
-            setMessage(error.message)
-        } else {
-            setMessage('Check your email for the magic link!')
-        }
-        setIsLoading(false)
-    }
 
     const handleSignUp = async () => {
         setIsLoading(true)
@@ -126,19 +109,14 @@ export default function LoginPage() {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                         <span className="bg-background px-2 text-muted-foreground">
-                            Or continue with
+                            Or
                         </span>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <Button variant="outline" onClick={handleMagicLink} disabled={isLoading || !email}>
-                        Magic Link
-                    </Button>
-                    <Button variant="outline" onClick={handleSignUp} disabled={isLoading || !email || !password}>
-                        Sign Up
-                    </Button>
-                </div>
+                <Button variant="outline" className="w-full" onClick={handleSignUp} disabled={isLoading || !email || !password}>
+                    Sign Up
+                </Button>
             </div>
         </div>
     )

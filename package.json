@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "echo \"Skipping E2E tests locally - Playwright runs in GitHub Actions\" && exit 0"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

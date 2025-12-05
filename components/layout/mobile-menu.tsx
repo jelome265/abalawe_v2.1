@@ -32,19 +32,19 @@ export function MobileMenu() {
                 <div className="fixed inset-0 top-16 z-50 md:hidden">
                     {/* Backdrop */}
                     <div
-                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/60 backdrop-blur-md"
                         onClick={() => setIsOpen(false)}
                     />
 
                     {/* Menu Panel */}
-                    <div className="relative bg-background border-b shadow-lg">
+                    <div className="relative bg-background/95 backdrop-blur-xl border-b shadow-2xl">
                         <nav className="container px-4 py-6">
                             <ul className="flex flex-col gap-4">
                                 {navLinks.map((link) => (
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
-                                            className="block py-2 text-lg font-medium transition-colors hover:text-primary"
+                                            className="block py-2 px-3 text-lg font-medium transition-colors hover:text-primary hover:bg-accent rounded-md"
                                             onClick={() => setIsOpen(false)}
                                         >
                                             {link.label}

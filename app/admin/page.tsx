@@ -21,7 +21,9 @@ export default async function AdminDashboard() {
     }
 
     // Fetch some stats (mocked for now or simple counts)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { count: productCount } = await (supabase.from('products') as any).select('*', { count: 'exact', head: true })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { count: orderCount } = await (supabase.from('orders') as any).select('*', { count: 'exact', head: true })
 
     return (

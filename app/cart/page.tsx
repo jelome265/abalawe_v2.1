@@ -17,7 +17,7 @@ export default function CartPage() {
         return (
             <div className="container flex flex-col items-center justify-center py-24 gap-4">
                 <h1 className="text-2xl font-bold">Your cart is empty</h1>
-                <p className="text-muted-foreground">Looks like you haven't added anything yet.</p>
+                <p className="text-muted-foreground">Looks like you haven&apos;t added anything yet.</p>
                 <Link href="/products">
                     <Button>Start Shopping</Button>
                 </Link>

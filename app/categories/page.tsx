@@ -41,7 +41,7 @@ export default async function CategoriesPage() {
             <div className="flex flex-col gap-4 mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
                 <p className="text-muted-foreground">
-                    Find exactly what you're looking for.
+                    Find exactly what you&apos;re looking for.
                 </p>
             </div>
 

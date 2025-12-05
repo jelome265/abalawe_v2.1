@@ -13,6 +13,7 @@ export default async function NewArrivalsPage() {
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .limit(12) as { data: any[] | null, error: any }
 
     if (error) {

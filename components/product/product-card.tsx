@@ -27,31 +27,31 @@ export function ProductCard({ product }: ProductCardProps) {
                         alt={product.name}
                         fill
                         className="object-cover transition-transform group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                     />
                 ) : (
-                    <div className="flex h-full items-center justify-center text-muted-foreground">
+                    <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
                         No Image
                     </div>
                 )}
             </Link>
-            <div className="flex flex-1 flex-col p-4">
-                <div className="mb-2">
-                    <p className="text-xs text-muted-foreground">{product.category}</p>
-                    <Link href={`/products/${product.slug}`} className="font-semibold hover:underline">
+            <div className="flex flex-1 flex-col p-2 sm:p-4">
+                <div className="mb-1 sm:mb-2">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{product.category}</p>
+                    <Link href={`/products/${product.slug}`} className="text-sm sm:text-base font-semibold hover:underline line-clamp-2">
                         {product.name}
                     </Link>
                 </div>
-                <div className="mt-auto flex items-center justify-between">
-                    <span className="font-bold">
+                <div className="mt-auto flex items-center justify-between gap-1">
+                    <span className="text-sm sm:text-base font-bold">
                         {new Intl.NumberFormat('en-US', {
                             style: 'currency',
                             currency: product.currency || 'USD',
                         }).format(product.price)}
                     </span>
-                    <Button size="sm" variant="secondary">
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        Add
+                    <Button size="sm" variant="secondary" className="h-7 px-2 sm:h-9 sm:px-3">
+                        <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Add</span>
                     </Button>
                 </div>
             </div>

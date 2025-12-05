@@ -12,6 +12,7 @@ export default async function ProductsPage() {
         .from('products')
         .select('*')
         .eq('is_active', true)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .order('created_at', { ascending: false }) as { data: any[] | null, error: any }
 
     if (error) {
@@ -28,7 +29,7 @@ export default async function ProductsPage() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
                 {products?.map((product) => (
                     <ProductCard key={product.id} product={product} />
                 ))}

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json()
-        const { filename, contentType: _contentType, size: _size } = uploadSchema.parse(body)
+        const { filename } = uploadSchema.parse(body)
 
         // Generate a unique path
         const path = `${user.id}/${Date.now()}-${filename}`
@@ -39,6 +39,7 @@ export async function POST(req: Request) {
         })
     } catch (error) {
         if (error instanceof z.ZodError) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return NextResponse.json({ error: (error as any).errors }, { status: 400 })
         }
         return NextResponse.json({ error: 'Upload failed' }, { status: 500 })

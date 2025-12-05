@@ -16,6 +16,7 @@ export default async function DashboardPage() {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .single() as { data: { full_name: string } | null, error: any }
 
     return (

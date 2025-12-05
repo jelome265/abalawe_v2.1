@@ -44,6 +44,7 @@ export async function POST(req: Request) {
                     .from('orders')
                     .select('*') // Select all to avoid type inference issues with specific columns
                     .eq('payment_transaction_id', tx_ref)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .single() as { data: { id: string; total_amount: number; currency: string } | null, error: any }
 
                 if (order) {
@@ -56,6 +57,7 @@ export async function POST(req: Request) {
                     }
 
                     await (supabase
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .from('orders') as any)
                         .update({ status: 'paid' })
                         .eq('id', order.id)

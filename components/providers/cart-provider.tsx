@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
+// import { createClient } from '@/utils/supabase/client'
 import { Database } from '@/types/database.types'
 
 type Product = Database['public']['Tables']['products']['Row']
@@ -28,7 +28,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const supabase = createClient()
+    // const supabase = createClient()
 
     // Load cart from LocalStorage on mount (for guests) 
     // In a full implementation, we would also fetch from Supabase if logged in
@@ -36,8 +36,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const savedCart = localStorage.getItem('cart')
         if (savedCart) {
             try {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setItems(JSON.parse(savedCart))
-            } catch (e) {
+            } catch {
                 console.error('Failed to parse cart from local storage')
             }
         }

@@ -26,10 +26,11 @@ export default function SettingsPage() {
                 return
             }
 
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .single() as { data: any, error: any }
 
             if (data) {
@@ -48,6 +49,7 @@ export default function SettingsPage() {
         setMessage(null)
 
         const { error } = await (supabase
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .from('profiles') as any)
             .update({
                 full_name: fullName,

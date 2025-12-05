@@ -7,7 +7,9 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export interface TextareaProps
-    extends React.TextareaHTMLAttributes<HTMLTextAreaElement> { }
+    extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+    _dummy?: never
+}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     ({ className, ...props }, ref) => {

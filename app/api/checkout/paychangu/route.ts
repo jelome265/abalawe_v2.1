@@ -15,6 +15,7 @@ const checkoutSchema = z.object({
 
 export async function POST(req: Request) {
     // Rate limiting
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rateLimitResult = rateLimitMiddleware(req as any)
     if (rateLimitResult) return rateLimitResult
 
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
         const { data: products, error: productsError } = await supabase
             .from('products')
             .select('id, price, name')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .in('id', productIds) as { data: { id: string; price: number; name: string }[] | null, error: any }
 
         if (productsError || !products) {
@@ -56,6 +58,7 @@ export async function POST(req: Request) {
 
         // Create Order in Supabase (Server-side)
         const { data: order, error: orderError } = await (supabase
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .from('orders') as any)
             .insert({
                 user_id: user.id,
@@ -89,6 +92,7 @@ export async function POST(req: Request) {
         if (paymentResponse.status === 'success' || paymentResponse.status === 'initiated') {
             // Update order with PayChangu transaction reference
             await (supabase
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .from('orders') as any)
                 .update({
                     payment_transaction_id: txRef

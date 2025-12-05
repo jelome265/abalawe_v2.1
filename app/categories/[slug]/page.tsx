@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { ProductCard } from '@/components/product/product-card'
-import { notFound } from 'next/navigation'
+// import { notFound } from 'next/navigation'
 
 interface CategoryPageProps {
     params: Promise<{
@@ -28,6 +28,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         .select('*')
         .eq('is_active', true)
         .eq('category', categoryName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .order('created_at', { ascending: false }) as { data: any[] | null, error: any }
 
     if (error) {

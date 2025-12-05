@@ -75,7 +75,7 @@ export default function Home() {
             View All
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
           {FEATURED_PRODUCTS.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -87,8 +87,8 @@ export default function Home() {
         <h2 className="text-3xl font-bold tracking-tight mb-8">Shop by Category</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {['Electronics', 'Apparel', 'Accessories'].map((category) => (
-            <Link 
-              key={category} 
+            <Link
+              key={category}
               href={`/categories/${category.toLowerCase()}`}
               className="group relative h-64 overflow-hidden rounded-lg bg-muted"
             >

@@ -38,6 +38,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         return (
             <Comp
+                // eslint-disable-next-line security/detect-object-injection
                 className={cn(baseStyles, variants[variant], sizes[size], className)}
                 ref={ref}
                 {...props}

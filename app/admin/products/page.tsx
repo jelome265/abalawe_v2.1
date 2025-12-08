@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { Button } from '@/components/ui/button'
-import { Plus, Edit, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { ProductActions } from './product-actions'
 import {
     Table,
     TableBody,
@@ -62,14 +63,7 @@ export default async function AdminProductsPage() {
                                     </span>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <div className="flex justify-end gap-2">
-                                        <Button variant="ghost" size="icon">
-                                            <Edit className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="text-destructive">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
+                                    <ProductActions productId={product.id} />
                                 </TableCell>
                             </TableRow>
                         ))}

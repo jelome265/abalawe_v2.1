@@ -42,12 +42,17 @@ export async function POST(req: Request) {
                 // Find order by PayChangu tx_ref
                 const { data: order } = await supabase
                     .from('orders')
-                    .select('*') // Select all to avoid type inference issues with specific columns
+                    .select('*')
                     .eq('payment_transaction_id', tx_ref)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .single() as { data: { id: string; total_amount: number; currency: string } | null, error: any }
+                    .single()
 
                 if (order) {
+                    // Idempotency check
+                    if (order.status === 'paid') {
+                        console.log('Order already paid:', order.id)
+                        return NextResponse.json({ received: true })
+                    }
+
                     // Verify amount matches
                     const paidAmount = verification.data.amount
                     // Allow small float difference or ensure exact match depending on API
@@ -56,11 +61,49 @@ export async function POST(req: Request) {
                         return NextResponse.json({ error: 'Amount mismatch' }, { status: 400 })
                     }
 
-                    await (supabase
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        .from('orders') as any)
+                    // Fetch order items to decrement stock
+                    const { data: orderItems, error: itemsError } = await supabase
+                        .from('order_items')
+                        .select('product_id, quantity')
+                        .eq('order_id', order.id)
+
+                    if (itemsError || !orderItems) {
+                        console.error('Failed to fetch order items:', itemsError)
+                        return NextResponse.json({ error: 'Failed to fetch order items' }, { status: 500 })
+                    }
+
+                    // Update order status to paid
+                    await supabase
+                        .from('orders')
                         .update({ status: 'paid' })
                         .eq('id', order.id)
+
+                    // Decrement stock for each item
+                    for (const item of orderItems) {
+                        // Note: This is not a DB transaction, so potential race condition if multiple webhooks exact same time
+                        // But we have idempotency check above.
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const { error: rpcError } = await (supabase.rpc as any)('decrement_stock', {
+                            row_id: item.product_id,
+                            quantity_to_decrement: item.quantity
+                        })
+
+                        if (rpcError) {
+                            // Fallback if RPC doesn't exist: Read-Update-Write (Less safe)
+                            const { data: product } = await supabase
+                                .from('products')
+                                .select('stock_quantity')
+                                .eq('id', item.product_id!)
+                                .single()
+
+                            if (product && product.stock_quantity !== null) {
+                                await supabase
+                                    .from('products')
+                                    .update({ stock_quantity: Math.max(0, product.stock_quantity - item.quantity) })
+                                    .eq('id', item.product_id!)
+                            }
+                        }
+                    }
                 }
             }
         }

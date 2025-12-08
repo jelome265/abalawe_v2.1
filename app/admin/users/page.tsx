@@ -60,7 +60,15 @@ export default function AdminUsersPage() {
         if (error) {
             console.error('Error fetching users:', error)
         } else {
-            setUsers(data || [])
+            // Map database result to Profile interface, handling null values
+            const mappedUsers = (data || []).map(user => ({
+                id: user.id,
+                email: user.email,
+                full_name: user.full_name,
+                role: user.role || 'customer', // Default to 'customer' if null
+                created_at: user.created_at || ''
+            }))
+            setUsers(mappedUsers)
         }
         setIsLoading(false)
     }

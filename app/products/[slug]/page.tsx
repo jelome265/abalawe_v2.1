@@ -1,8 +1,9 @@
 import { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ShoppingCart, Heart, Share2 } from 'lucide-react'
+import { Heart, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { AddToCart } from './add-to-cart'
 import { createClient } from '@/utils/supabase/server'
 import { Database } from '@/types/database.types'
 
@@ -88,10 +89,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             <span className="text-3xl font-bold">
                                 {new Intl.NumberFormat('en-US', {
                                     style: 'currency',
-                                    currency: product.currency,
+                                    currency: product.currency || 'USD',
                                 }).format(product.price)}
                             </span>
-                            {product.stock_quantity > 0 ? (
+                            {(product.stock_quantity && product.stock_quantity > 0) ? (
                                 <span className="mb-1 text-sm text-green-600 font-medium">In Stock</span>
                             ) : (
                                 <span className="mb-1 text-sm text-red-600 font-medium">Out of Stock</span>
@@ -104,10 +105,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     </div>
 
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                        <Button size="lg" className="flex-1" disabled={product.stock_quantity === 0}>
-                            <ShoppingCart className="mr-2 h-5 w-5" />
-                            Add to Cart
-                        </Button>
+                        <AddToCart product={product} />
                         <Button size="lg" variant="outline" aria-label="Add to Wishlist">
                             <Heart className="h-5 w-5" />
                         </Button>

@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { initiatePayment } from '@/utils/paychangu'
 import { z } from 'zod'
+import { Database } from '@/types/database.types'
+import { SupabaseClient } from '@supabase/supabase-js'
 import '@/utils/env' // Validate environment variables
 import { rateLimitMiddleware } from '@/utils/rate-limit'
 
@@ -13,13 +15,12 @@ const checkoutSchema = z.object({
     email: z.string().email(),
 })
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     // Rate limiting
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rateLimitResult = rateLimitMiddleware(req as any)
+    const rateLimitResult = rateLimitMiddleware(req)
     if (rateLimitResult) return rateLimitResult
 
-    const supabase = await createClient()
+    const supabase: SupabaseClient<Database> = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
@@ -34,32 +35,40 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
         }
 
-        // Fetch products to calculate total
-        const productIds = items.map(item => item.id)
+        // Fetch products to calculate total and check stock
+        // Fetch products to calculate total and check stock
         const { data: products, error: productsError } = await supabase
             .from('products')
-            .select('id, price, name')
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .in('id', productIds) as { data: { id: string; price: number; name: string }[] | null, error: any }
+            .select('id, price, name, stock_quantity')
+            .in('id', items.map(item => item.id))
 
         if (productsError || !products) {
             throw new Error('Failed to fetch products')
         }
 
-        // Calculate total amount
+        // Calculate total amount and validate stock
         let totalAmount = 0
         for (const item of items) {
-            const product = products.find((p: { id: string; price: number }) => p.id === item.id)
+            const product = products.find((p) => p.id === item.id)
             if (!product) {
                 throw new Error(`Product not found: ${item.id}`)
             }
+
+            // Handle potentially null stock_quantity
+            const stock = product.stock_quantity ?? 0
+            if (stock < item.quantity) {
+                return NextResponse.json(
+                    { error: `Insufficient stock for ${product.name}. Only ${stock} available.` },
+                    { status: 400 }
+                )
+            }
+
             totalAmount += product.price * item.quantity
         }
-
         // Create Order in Supabase (Server-side)
-        const { data: order, error: orderError } = await (supabase
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .from('orders') as any)
+        console.log('Attempting to create order for user:', user.id)
+        const { data: order, error: orderError } = await supabase
+            .from('orders')
             .insert({
                 user_id: user.id,
                 total_amount: totalAmount,
@@ -69,15 +78,37 @@ export async function POST(req: Request) {
             .select()
             .single()
 
-        if (orderError) {
+        if (orderError || !order) {
             console.error('Order creation error:', orderError)
             throw new Error('Failed to create order')
         }
 
+        // Create Order Items
+        const orderItemsData = items.map(item => {
+            const product = products.find((p) => p.id === item.id)
+            return {
+                order_id: order.id,
+                product_id: item.id,
+                quantity: item.quantity,
+                price_at_purchase: product!.price
+            }
+        })
+
+        const { error: itemsError } = await supabase
+            .from('order_items')
+            .insert(orderItemsData)
+
+        if (itemsError) {
+            console.error('Order items creation error:', itemsError)
+            // Ideally we should rollback the order here, but for now we throw
+            throw new Error('Failed to create order items')
+        }
+
         // Generate a unique transaction reference
-        const txRef = `tx-${order!.id}-${Date.now()}`
+        const txRef = `tx-${order.id}-${Date.now()}`
 
         // Initiate payment with PayChangu
+        console.log('Initiating PayChangu payment with ref:', txRef)
         const paymentResponse = await initiatePayment({
             amount: totalAmount,
             currency: 'MWK',
@@ -91,9 +122,8 @@ export async function POST(req: Request) {
 
         if (paymentResponse.status === 'success' || paymentResponse.status === 'initiated') {
             // Update order with PayChangu transaction reference
-            await (supabase
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .from('orders') as any)
+            await supabase
+                .from('orders')
                 .update({
                     payment_transaction_id: txRef
                 })
@@ -107,8 +137,9 @@ export async function POST(req: Request) {
     } catch (error: unknown) {
         console.error('PayChangu Checkout Error:', error)
         // Don't expose detailed error messages to client for security
+        // TEMPORARY: Expose detailed error for debugging
         return NextResponse.json(
-            { error: 'Checkout failed. Please try again.' },
+            { error: `Debug Error: ${error instanceof Error ? error.message : JSON.stringify(error)}` },
             { status: 500 }
         )
     }

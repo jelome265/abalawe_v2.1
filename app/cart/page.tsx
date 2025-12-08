@@ -57,7 +57,7 @@ export default function CartPage() {
                                     <p className="font-medium">
                                         {new Intl.NumberFormat('en-US', {
                                             style: 'currency',
-                                            currency: item.product.currency,
+                                            currency: item.product.currency || 'USD',
                                         }).format(item.product.price * item.quantity)}
                                     </p>
                                 </div>

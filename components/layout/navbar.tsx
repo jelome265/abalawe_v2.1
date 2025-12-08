@@ -1,8 +1,9 @@
 import Link from 'next/link'
-import { ShoppingCart, User } from 'lucide-react'
+import { User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/utils/supabase/server'
 import { MobileMenu } from './mobile-menu'
+import { CartButton } from './cart-button'
 
 export default async function Navbar() {
     const supabase = await createClient()
@@ -31,11 +32,7 @@ export default async function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <Link href="/cart">
-                        <Button variant="ghost" size="icon" aria-label="Cart">
-                            <ShoppingCart className="h-5 w-5" />
-                        </Button>
-                    </Link>
+                    <CartButton />
 
                     {user ? (
                         <Link href="/dashboard">

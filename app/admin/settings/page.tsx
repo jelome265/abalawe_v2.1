@@ -1,174 +1,348 @@
 'use client'
 
 import { useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
+import {
+    Store, CreditCard, Bell, Shield, Globe,
+    Save, RefreshCw
+} from 'lucide-react'
 
 export default function AdminSettingsPage() {
-    const [activeTab, setActiveTab] = useState<'basic' | 'advanced'>('basic')
-    const [siteName, setSiteName] = useState('Abalawe')
-    const [contactEmail, setContactEmail] = useState('support@abalawe.com')
-    const [currency, setCurrency] = useState('USD')
-    const [emailVerificationRequired, setEmailVerificationRequired] = useState(true)
-    const [message, setMessage] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [saved, setSaved] = useState(false)
 
-    const handleSaveBasic = () => {
-        setMessage('Basic settings saved successfully!')
-        setTimeout(() => setMessage(null), 3000)
-    }
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
 
-    const handleSaveAdvanced = () => {
-        setMessage('Advanced settings saved successfully!')
-        setTimeout(() => setMessage(null), 3000)
+        // Simulate save
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        setLoading(false)
+        setSaved(true)
+        setTimeout(() => setSaved(false), 3000)
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Admin Settings</h1>
-                <p className="text-muted-foreground mt-2">Configure your store settings and preferences</p>
+                <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+                <p className="text-muted-foreground mt-2">
+                    Manage your store configuration and preferences
+                </p>
             </div>
 
-            {/* Tabs */}
-            <div className="border-b">
-                <div className="flex gap-6">
-                    <button
-                        onClick={() => setActiveTab('basic')}
-                        className={`pb-3 px-1 border-b-2 transition-colors ${activeTab === 'basic'
-                                ? 'border-primary text-primary font-medium'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        Basic Settings
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('advanced')}
-                        className={`pb-3 px-1 border-b-2 transition-colors ${activeTab === 'advanced'
-                                ? 'border-primary text-primary font-medium'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        Advanced Settings
-                    </button>
-                </div>
-            </div>
-
-            {message && (
-                <div className="p-4 rounded-md bg-green-50 border border-green-200 text-green-800">
-                    {message}
-                </div>
-            )}
-
-            {/* Basic Settings Tab */}
-            {activeTab === 'basic' && (
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>General Information</CardTitle>
-                            <CardDescription>Update your store&apos;s basic information</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
+            <form onSubmit={handleSave} className="space-y-6">
+                {/* General Settings */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <Store className="h-5 w-5" />
+                            <CardTitle>General Settings</CardTitle>
+                        </div>
+                        <CardDescription>
+                            Basic information about your store
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="siteName">Site Name</Label>
+                                <Label htmlFor="store-name">Store Name</Label>
                                 <Input
-                                    id="siteName"
-                                    value={siteName}
-                                    onChange={(e) => setSiteName(e.target.value)}
+                                    id="store-name"
+                                    placeholder="Abalawe Store"
+                                    defaultValue="Abalawe"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="contactEmail">Contact Email</Label>
+                                <Label htmlFor="store-email">Contact Email</Label>
                                 <Input
-                                    id="contactEmail"
+                                    id="store-email"
                                     type="email"
-                                    value={contactEmail}
-                                    onChange={(e) => setContactEmail(e.target.value)}
+                                    placeholder="contact@store.com"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="store-description">Store Description</Label>
+                            <Textarea
+                                id="store-description"
+                                placeholder="Tell customers about your store..."
+                                rows={3}
+                            />
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="store-phone">Phone Number</Label>
+                                <Input
+                                    id="store-phone"
+                                    type="tel"
+                                    placeholder="+261 XX XXX XXXX"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="currency">Default Currency</Label>
-                                <select
-                                    id="currency"
-                                    value={currency}
-                                    onChange={(e) => setCurrency(e.target.value)}
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                >
-                                    <option value="USD">USD - US Dollar</option>
-                                    <option value="EUR">EUR - Euro</option>
-                                    <option value="GBP">GBP - British Pound</option>
-                                    <option value="MWK">MWK - Malawian Kwacha</option>
-                                </select>
+                                <Label htmlFor="store-address">Address</Label>
+                                <Input
+                                    id="store-address"
+                                    placeholder="Store address"
+                                />
                             </div>
-                            <Button onClick={handleSaveBasic} className="mt-4">
-                                Save Basic Settings
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
+                        </div>
+                    </CardContent>
+                </Card>
 
-            {/* Advanced Settings Tab */}
-            {activeTab === 'advanced' && (
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Authentication Settings</CardTitle>
-                            <CardDescription>Configure user authentication and verification</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
+                {/* Payment Settings */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <CreditCard className="h-5 w-5" />
+                            <CardTitle>Payment Settings</CardTitle>
+                        </div>
+                        <CardDescription>
+                            Configure payment gateways and options
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-purple-100 rounded">
+                                    <CreditCard className="h-5 w-5 text-purple-600" />
+                                </div>
+                                <div>
+                                    <p className="font-medium">PayChangu</p>
+                                    <p className="text-sm text-muted-foreground">Accept mobile money payments</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                    Active
+                                </span>
+                                <Button variant="outline" size="sm">Configure</Button>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="default-currency">Default Currency</Label>
+                            <select
+                                id="default-currency"
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            >
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="MWK">MWK - Malawian Kwacha</option>
+                                <option value="ZMW">ZMW - Zambian Kwacha</option>
+                                <option value="EUR">EUR - Euro</option>
+                            </select>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="tax-enabled"
+                                className="h-4 w-4 rounded border-gray-300"
+                                defaultChecked
+                            />
+                            <Label htmlFor="tax-enabled" className="font-normal cursor-pointer">
+                                Enable tax calculation
+                            </Label>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="tax-rate">Tax Rate (%)</Label>
+                            <Input
+                                id="tax-rate"
+                                type="number"
+                                step="0.01"
+                                placeholder="0.00"
+                                defaultValue="16.5"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Email & Notifications */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <Bell className="h-5 w-5" />
+                            <CardTitle>Email & Notifications</CardTitle>
+                        </div>
+                        <CardDescription>
+                            Control how you receive notifications
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <Label htmlFor="emailVerification">Email Verification Required</Label>
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                        Require users to verify their email before accessing the site
-                                    </p>
+                                    <p className="font-medium">Order Notifications</p>
+                                    <p className="text-sm text-muted-foreground">Get notified about new orders</p>
                                 </div>
-                                <button
-                                    onClick={() => setEmailVerificationRequired(!emailVerificationRequired)}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${emailVerificationRequired ? 'bg-primary' : 'bg-gray-300'
-                                        }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${emailVerificationRequired ? 'translate-x-6' : 'translate-x-1'
-                                            }`}
-                                    />
-                                </button>
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-gray-300"
+                                    defaultChecked
+                                />
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Database & Security</CardTitle>
-                            <CardDescription>Manage database settings and security policies</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label>Row Level Security (RLS)</Label>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                                    <span className="text-sm text-muted-foreground">Enabled - All tables protected</span>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-medium">Product Low Stock Alerts</p>
+                                    <p className="text-sm text-muted-foreground">Alert when products run low</p>
                                 </div>
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-gray-300"
+                                    defaultChecked
+                                />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-medium">Customer Sign-ups</p>
+                                    <p className="text-sm text-muted-foreground">Notify about new customer registrations</p>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-gray-300"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="smtp-host">SMTP Server</Label>
+                            <Input
+                                id="smtp-host"
+                                placeholder="smtp.example.com"
+                            />
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="smtp-user">SMTP Username</Label>
+                                <Input id="smtp-user" placeholder="user@example.com" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Database Backup</Label>
-                                <p className="text-sm text-muted-foreground">
-                                    Automated backups are managed by Supabase
-                                </p>
-                                <Button variant="outline" size="sm">
-                                    View Backup Settings in Supabase
-                                </Button>
+                                <Label htmlFor="smtp-password">SMTP Password</Label>
+                                <Input id="smtp-password" type="password" placeholder="••••••••" />
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    <Button onClick={handleSaveAdvanced} className="mt-4">
-                        Save Advanced Settings
+                {/* Security Settings */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <Shield className="h-5 w-5" />
+                            <CardTitle>Security Settings</CardTitle>
+                        </div>
+                        <CardDescription>
+                            Enhance your store&apos;s security
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="font-medium">Two-Factor Authentication</p>
+                                <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
+                            </div>
+                            <Button variant="outline" size="sm">Enable</Button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="font-medium">Session Timeout</p>
+                                <p className="text-sm text-muted-foreground">Currently: 30 minutes</p>
+                            </div>
+                            <Button variant="outline" size="sm">Configure</Button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="force-https"
+                                className="h-4 w-4 rounded border-gray-300"
+                                defaultChecked
+                            />
+                            <Label htmlFor="force-https" className="font-normal cursor-pointer">
+                                Force HTTPS for all connections
+                            </Label>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* SEO & Marketing */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <Globe className="h-5 w-5" />
+                            <CardTitle>SEO & Marketing</CardTitle>
+                        </div>
+                        <CardDescription>
+                            Optimize your store for search engines
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="site-title">Site Title</Label>
+                            <Input
+                                id="site-title"
+                                placeholder="Abalawe - Your Store Name"
+                                defaultValue="Abalawe"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="meta-description">Meta Description</Label>
+                            <Textarea
+                                id="meta-description"
+                                placeholder="Describe your store for search engines..."
+                                rows={3}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="meta-keywords">Meta Keywords</Label>
+                            <Input
+                                id="meta-keywords"
+                                placeholder="ecommerce, products, shop"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="google-analytics">Google Analytics ID</Label>
+                            <Input
+                                id="google-analytics"
+                                placeholder="G-XXXXXXXXXX"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Save Button */}
+                <div className="flex items-center gap-4">
+                    <Button type="submit" size="lg" disabled={loading}>
+                        {loading ? (
+                            <>
+                                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="mr-2 h-4 w-4" />
+                                Save All Settings
+                            </>
+                        )}
                     </Button>
+                    {saved && (
+                        <span className="text-sm text-green-600 font-medium">
+                            ✓ Settings saved successfully
+                        </span>
+                    )}
                 </div>
-            )}
+            </form>
         </div>
     )
 }

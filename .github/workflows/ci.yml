@@ -1,78 +1,80 @@
-name: CI
+name: CI  # Workflow name; appears in UI/logs; enables filtering in repo actions tab for audit trails.
+on:  # Trigger events; covers dev branches for iterative testing, tying into branch protection for secure merges.
+  push:  # On pushes; validates direct commits, preventing broken deploys; integrates with git hooks if configured.
+    branches: [ main, master, develop ]  # Includes develop for feature integration; reduces false positives vs. all branches.
+  pull_request:  # On PRs; enforces pre-merge checks, blocking insecure code; supports required status checks.
+    branches: [ main, master, develop ]  # Mirrors push; aligns with review processes, enhancing collab security.
 
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
+jobs:  # Job definitions; executed in parallel by default (build and e2e-tests run concurrently), optimizing CI throughput on runners.
+  build:  # Job for compilation/validation; separates concerns from E2E, allowing independent failures for targeted fixes.
+    name: Build & Test  # Descriptive name; aids log navigation; reflects scope (lint/build/test).
+    runs-on: ubuntu-latest  # Linux runner; Kali-aligned for your transition; add matrix for windows-latest to test cross-OS without YAML changes.
 
-jobs:
-  build:
-    name: Build & Test
-    runs-on: ubuntu-latest
+    steps:  # Step sequence; dependencies implicit (e.g., install before build); failures propagate, halting job.
+      - uses: actions/checkout@v4  # Code fetch; full history; secures git ops (e.g., no malicious submodules).
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
+      - name: Setup Node.js  # Runtime prep; consistent env across CI/local, mitigating version exploits.
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '20'  # Fixed version; avoids LTS drift; ensures V8 engine compatibility for process.env handling.
+          cache: 'npm'  # Caches node_modules; speeds repeats, but clears on cache misses; ties to efficiency in CI costs.
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install Dependencies  # Deps resolution; uses lockfile for integrity, blocking tampered packages.
+        run: npm ci  # Clean install; reproducible, secure vs. npm install (no dev dep bloat).
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint  # Code quality; early failure on style issues, preventing downstream bugs.
+        run: npm run lint  # Assumes eslint/prettier; enforces standards, tying to maintainability.
 
-      - name: Type Check
-        run: npx tsc --noEmit
+      - name: Type Check  # Static analysis; catches type errors pre-runtime, enhancing data integrity (e.g., string env vars).
+        run: npx tsc --noEmit  # No output; pure check; respects tsconfig, securing against type mismatches.
 
-      - name: Build Application  
-        run: npm run build
-        env:
+      - name: Build Application  # Compilation; generates artifacts; env injection here scopes to build process.
+        run: npm run build  # Next.js build; optimizes SSR/SSG; fails on config errors.
+        env:  # Vars as strings; loaded into process.env; placeholders enable local/CI fallback without crashes.
           # Add your secrets in GitHub repo settings -> Secrets and variables -> Actions
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key' }}
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }}
-          PAYCHANGU_SECRET_KEY: ${{ secrets.PAYCHANGU_SECRET_KEY || 'placeholder-key' }}
-          PAYCHANGU_PUBLIC_KEY: ${{ secrets.PAYCHANGU_PUBLIC_KEY || 'placeholder-key' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}  # Client URL; public but secret-stored to prevent bundle leaks.
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}  # Anon auth; low-priv, but rotate on compromise.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key' }}  # Server key; high-priv, never public; for admin ops.
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }}  # Site base; for URLs/redirects.
+          PAYCHANGU_SECRET_KEY: ${{ secrets.PAYCHANGU_SECRET_KEY || 'placeholder-key' }}  # Payment secret; encrypt-sensitive.
+          PAYCHANGU_PUBLIC_KEY: ${{ secrets.PAYCHANGU_PUBLIC_KEY || 'placeholder-key' }}  # Public but stored securely.
 
-      - name: Run Unit Tests
-        run: npm test
+      - name: Run Unit Tests  # Unit validation; isolates logic; runs post-build for coverage.
+        run: npm test  # Jest/vitest assumed; reports failures clearly.
 
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'e2e')
+  e2e-tests:  # Job for integration; conditional to save costs, but risks skipped tests if labels mishandled.
+    name: E2E Tests  # Clear scope; distinguishes from unit.
+    runs-on: ubuntu-latest  # Consistent with build; portable to Windows via matrix for your env parity.
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'e2e')  # PR filter; label-based; edge: no label skips, potentially merging untested code.
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4  # Duplicate but isolated; ensures job independence.
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'npm'  # Reuse cache key; accelerates if build ran prior.
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright Browsers  # Browser setup; --with-deps installs OS libs (e.g., libnss3 on Ubuntu, msedge on Windows).
+        run: npx playwright install --with-deps  # Cross-browser; headless in CI.
 
-      - name: Run E2E Tests
-        run: npx playwright test
+      - name: Run E2E Tests  # Core step; env injection fixes Supabase init; assumes server auto-starts via Playwright config.
+        run: npx playwright test  # Executes suite; outputs traces for debugging.
         env:
-          CI: true
-          PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000' }}
+          CI: true  # Headless mode; optimizes for non-interactive runners.
+          PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000' }}  # Test target; fallback handles secret absence.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}  # Added: Mirrors build; prevents undefined env errors.
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}  # Added: Essential for client creation in middleware.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key' }}  # Added if needed for server-side; optional but consistent.
 
-      - name: Upload Playwright Report
+      - name: Upload Playwright Report  # Artifact persistence; for failure analysis.
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always()  # Runs regardless; captures success/failure states.
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+          name: playwright-report  # Unique identifier.
+          path: playwright-report/  # Default dir; customizable.
+          retention-days: 7  # Short retention; balances storage vs. audit window.

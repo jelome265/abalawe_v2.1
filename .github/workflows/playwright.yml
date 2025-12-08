@@ -1,31 +1,33 @@
-name: Playwright Tests
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+name: Playwright Tests  # Defines the workflow name; visible in GitHub UI for easy identification; ties into CI/CD visibility for auditing pipelines.
+on:  # Specifies trigger events; ensures tests run on code changes to main/master, enforcing quality gates early in the dev lifecycle.
+  push:  # Triggers on pushes; catches direct commits, integrating with branch protection rules for secure merges.
+    branches: [ main, master ]  # Targets common default branches; adaptable for feature branches if needed, but limits noise in CI.
+  pull_request:  # Triggers on PRs; enables pre-merge validation, preventing insecure or broken code from entering production branches.
+    branches: [ main, master ]  # Mirrors push targets; supports review workflows, tying into GitHub's security features like required checks.
 
-jobs:
-  test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+jobs:  # Groups executable units; allows parallelism if multiple jobs added, but here single for simplicity and resource efficiency.
+  test:  # Job name; descriptive for logs; could be matrixed for multi-OS testing (e.g., ubuntu/windows) to align with your Windows/Kali transition.
+    timeout-minutes: 60  # Sets max runtime; prevents infinite loops but allows headroom for flaky E2E tests; monitor via GitHub metrics for optimization.
+    runs-on: ubuntu-latest  # Runner OS; Ubuntu for Linux compatibility (Kali-like), cost-effective; switch to windows-latest for parity testing without code changes.
+    steps:  # Sequence of actions; executed in order, with implicit dependency chaining; failures halt subsequent steps for fast feedback.
+    - uses: actions/checkout@v4  # Checks out repo code; fetches full history by default; essential for accessing source, ties into git security (e.g., no unsigned commits).
+    - uses: actions/setup-node@v4  # Installs Node.js; ensures consistent runtime across CI/local; mitigates version drift vulnerabilities.
       with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-      env:
-        CI: true
-        PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000' }}
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
+        node-version: lts/*  # Uses latest LTS; balances stability/security patches with features; auto-updates on runner, reducing maintenance.
+    - name: Install dependencies  # Step name; aids debugging in logs; separates concerns for modular troubleshooting.
+      run: npm ci  # Installs from package-lock.json; reproducible, faster than npm install; enforces dependency integrity, preventing supply-chain attacks.
+    - name: Install Playwright Browsers  # Prepares testing env; ensures browsers are available before tests, avoiding runtime fetches.
+      run: npx playwright install --with-deps  # Installs Chromium/Firefox/WebKit + OS deps; --with-deps handles Ubuntu libs (e.g., libnss3), portable to Windows via same command.
+    - name: Run Playwright tests  # Core execution step; invokes test suite; env injection here scopes vars to this process, enhancing isolation.
+      run: npx playwright test  # Runs tests; assumes config in playwright.config.ts (e.g., starting Next.js server); outputs to console for immediate failure visibility.
+      env:  # Environment variables; injected into subprocess; strings by default, parsed by Node.js as process.env; no type coercion needed.
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}  # Injects Supabase URL secret; required for client init; public prefix allows bundling but demands secret storage to prevent exposure.
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}  # Injects anon key; low-priv but sensitive; rotation via Supabase dashboard if leaked; ties into auth security.
+        CI: true  # Flags CI mode; enables headless browsers in Playwright, optimizes for non-interactive runs; prevents GUI deps on runners.
+        PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000' }}  # Optional base URL; falls back to local; assumes server starts in tests, else add explicit npm run start &.
+    - uses: actions/upload-artifact@v4  # Uploads results; preserves for analysis; runs post-tests for debugging failures.
+      if: ${{ !cancelled() }}  # Condition: always except manual cancel; ensures artifacts on success/failure, aiding post-mortems without re-runs.
       with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+        name: playwright-report  # Artifact name; unique for downloads; ties into GitHub's storage (free tier limits).
+        path: playwright-report/  # Source path; assumes default Playwright output; customizable if reports elsewhere.
+        retention-days: 30  # Retention period; balances storage costs with audit needs; auto-deletes to manage quota.

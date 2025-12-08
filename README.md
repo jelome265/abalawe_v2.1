@@ -1,5 +1,4 @@
-
-# <img src="https://dummyimage.com/1200x280/0a0e27/ffffff&text=ABALAWE+E-COMMERCE" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:3a8296,100:091519&height=150&text=Abalawe%20E-commerce&fontSize=50&fontColor=61DAFB&fontAlignY=45&animation=twinkling&section=header" />
 
 # 🌐 **Abalawe E-commerce**
 
@@ -149,3 +148,4 @@ To report vulnerabilities, contact:
 📧 **[security@abalawe.com](mailto:security@abalawe.com)**
 
 We follow responsible disclosure guidelines.
+

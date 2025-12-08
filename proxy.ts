@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import '@/utils/env' // Validate environment variables on startup
 import { Database } from '@/types/database.types'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     // Admin routes protection - verify role before allowing access
     if (request.nextUrl.pathname.startsWith('/admin')) {
         // Skip middleware for admin login page
@@ -80,7 +80,7 @@ export async function middleware(request: NextRequest) {
     return response
 }
 
-export const config = {
+export const proxyConfig = {
     matcher: [
         /*
          * Match all request paths except for the ones starting with:

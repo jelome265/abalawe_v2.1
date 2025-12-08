@@ -19,17 +19,24 @@ export default function LoginPage() {
         setIsLoading(true)
         setMessage(null)
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
 
-        if (error) {
-            setMessage(error.message)
+            if (error) {
+                console.error('Supabase auth error:', error)
+                setMessage(`Authentication error: ${error.message}`)
+                setIsLoading(false)
+            } else {
+                router.push('/dashboard')
+                router.refresh()
+            }
+        } catch (fetchError) {
+            console.error('Network/fetch error:', fetchError)
+            setMessage(`Network error: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`)
             setIsLoading(false)
-        } else {
-            router.push('/dashboard')
-            router.refresh()
         }
     }
 

@@ -43,10 +43,6 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; img-src 'self' https: data: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://api.paychangu.com https://vercel.live; frame-src 'self' https://*.supabase.co;",
-          },
         ],
       },
     ];

@@ -25,11 +25,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
-        continue-on-error: true  # Don't fail build on lint warnings
 
       - name: Type Check
         run: npx tsc --noEmit
-        continue-on-error: true  # Don't fail build on type errors
 
       - name: Build Application  
         run: npm run build
@@ -46,9 +44,9 @@ jobs:
         run: npm test
 
   e2e-tests:
-    name: E2E Tests (Optional)
+    name: E2E Tests
     runs-on: ubuntu-latest
-    continue-on-error: true  # Make entire job optional
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'e2e')
 
     steps:
       - uses: actions/checkout@v4
@@ -67,9 +65,9 @@ jobs:
 
       - name: Run E2E Tests
         run: npx playwright test
-        continue-on-error: true
         env:
           CI: true
+          PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000' }}
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4

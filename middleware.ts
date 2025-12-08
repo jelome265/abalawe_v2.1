@@ -67,6 +67,7 @@ export async function middleware(request: NextRequest) {
         style-src 'self' 'unsafe-inline';
         img-src 'self' blob: data: https://*.supabase.co;
         font-src 'self';
+        connect-src 'self' https://*.supabase.co https://api.paychangu.com;
         object-src 'none';
         base-uri 'self';
         form-action 'self';

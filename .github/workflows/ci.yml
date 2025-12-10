@@ -35,7 +35,7 @@ jobs:  # Job definitions; executed in parallel by default (build and e2e-tests r
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}  # Client URL; public but secret-stored to prevent bundle leaks.
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}  # Anon auth; low-priv, but rotate on compromise.
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key' }}  # Server key; high-priv, never public; for admin ops.
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }}  # Site base; for URLs/redirects.
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://abalawe-v21.vercel.app' }}  # Site base; for URLs/redirects.
           PAYCHANGU_SECRET_KEY: ${{ secrets.PAYCHANGU_SECRET_KEY || 'placeholder-key' }}  # Payment secret; encrypt-sensitive.
           PAYCHANGU_PUBLIC_KEY: ${{ secrets.PAYCHANGU_PUBLIC_KEY || 'placeholder-key' }}  # Public but stored securely.
 
@@ -66,7 +66,7 @@ jobs:  # Job definitions; executed in parallel by default (build and e2e-tests r
         run: npx playwright test  # Executes suite; outputs traces for debugging.
         env:
           CI: true  # Headless mode; optimizes for non-interactive runners.
-          PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000' }}  # Test target; fallback handles secret absence.
+          PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'https://abalawe-v21.vercel.app' }}  # Test target; fallback handles secret absence.
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}  # Added: Mirrors build; prevents undefined env errors.
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}  # Added: Essential for client creation in middleware.
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key' }}  # Added if needed for server-side; optional but consistent.

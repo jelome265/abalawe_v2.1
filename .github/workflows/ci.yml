@@ -48,7 +48,7 @@ jobs:  # Job definitions; executed in parallel by default (build and e2e-tests r
     if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'e2e')  # PR filter; label-based; edge: no label skips, potentially merging untested code.
 
     steps:
-      - uses: actions/checkout@v4  # Duplicate but isolated; ensures job independence.
+      - uses: actions/checkout@v4  # Duplicate but isolated; ensures job independence.   
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

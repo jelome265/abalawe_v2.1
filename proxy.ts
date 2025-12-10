@@ -80,7 +80,8 @@ export async function proxy(request: NextRequest) {
     return response
 }
 
-export const proxyConfig = {
+// Export configuration for Next.js to recognize this as middleware
+export const config = {
     matcher: [
         /*
          * Match all request paths except for the ones starting with:

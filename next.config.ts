@@ -47,6 +47,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Updated configuration for Next.js 16
+  serverExternalPackages: ['@supabase/supabase-js'],
 };
 
 export default nextConfig;

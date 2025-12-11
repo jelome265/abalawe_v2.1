@@ -23,10 +23,14 @@ jobs:  # Groups executable units; allows parallelism if multiple jobs added, but
       env:  # Environment variables; injected into subprocess; strings by default, parsed by Node.js as process.env; no type coercion needed.
         NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}  # Injects Supabase URL secret; required for client init; public prefix allows bundling but demands secret storage to prevent exposure.
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}  # Injects anon key; low-priv but sensitive; rotation via Supabase dashboard if leaked; ties into auth security.
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}  # Service role key for server operations
+        NEXT_PUBLIC_PAYCHANGU_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_PAYCHANGU_PUBLIC_KEY }}  # PayChangu public key
+        PAYCHANGU_SECRET_KEY: ${{ secrets.PAYCHANGU_SECRET_KEY }}  # PayChangu secret key
+        NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }}  # Site URL for the app
         CI: true  # Flags CI mode; enables headless browsers in Playwright, optimizes for non-interactive runs; prevents GUI deps on runners.
-        PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3001' }}  # Use localhost:3001 for CI tests
+        PLAYWRIGHT_TEST_BASE_URL: ${{ secrets.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000' }}  # Use localhost:3000 for CI tests
     - uses: actions/upload-artifact@v4  # Uploads results; preserves for analysis; runs post-tests for debugging failures.
-      if: ${{ !cancelled() }}  # Condition: always except manual cancel; ensures artifacts on success/failure, aiding post-mortems without re-runs.
+      if: ${{ !cancelled() }}    
       with:
         name: playwright-report  # Artifact name; unique for downloads; ties into GitHub's storage (free tier limits).
         path: playwright-report/  # Source path; assumes default Playwright output; customizable if reports elsewhere.

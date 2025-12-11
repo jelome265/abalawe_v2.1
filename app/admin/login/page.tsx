@@ -44,6 +44,8 @@ export default function AdminLoginPage() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .single() as { data: { role: string } | null; error: any }
 
+            console.log('Admin login - profile data:', { profile, profileError, userId: data.user.id })
+
             if (profileError) {
                 await supabase.auth.signOut()
                 setError('Error verifying admin privileges')
@@ -53,7 +55,7 @@ export default function AdminLoginPage() {
 
             if (profile?.role !== 'admin') {
                 await supabase.auth.signOut()
-                setError('Access denied. Admin privileges required.')
+                setError(`Access denied. Current role: ${profile?.role || 'none'}. Admin privileges required.`)
                 setLoading(false)
                 return
             }
@@ -69,7 +71,7 @@ export default function AdminLoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="space-y-1">
                     <div className="flex items-center justify-center mb-4">

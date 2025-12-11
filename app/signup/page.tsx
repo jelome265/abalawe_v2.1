@@ -32,7 +32,7 @@ export default function SignupPage() {
             return
         }
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
@@ -43,11 +43,20 @@ export default function SignupPage() {
             },
         })
 
+        console.log('Signup result:', { data, error })
+
         if (error) {
             setMessage(error.message)
             setIsLoading(false)
         } else {
-            setMessage('Check your email to confirm your account!')
+            // Check if user needs confirmation
+            if (data.user && !data.user.email_confirmed_at) {
+                setMessage('Check your email to confirm your account!')
+            } else if (data.user) {
+                setMessage('Account created successfully! You can now log in.')
+            } else {
+                setMessage('Something went wrong. Please try again.')
+            }
             setIsLoading(false)
         }
     }

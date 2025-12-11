@@ -31,13 +31,13 @@ export default function NewProductPage() {
     // Check admin authentication on mount
     useEffect(() => {
         const checkAuth = async () => {
-            const isAuthorized = await protectAdminRouteClient()
+            const isAuthorized = await protectAdminRouteClient(router)
             if (!isAuthorized) {
                 return // Will be redirected by protectAdminRouteClient
             }
         }
         checkAuth()
-    }, [])
+    }, [router])
 
     const generateSlug = (name: string): string => {
         return name

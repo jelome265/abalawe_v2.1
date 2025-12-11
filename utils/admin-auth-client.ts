@@ -4,10 +4,10 @@ import { useRouter } from 'next/navigation'
 /**
  * Client-side admin protection for client components
  * Checks authentication and admin role, redirects if not authorized
+ * Note: This must be called inside a React component or custom hook
  */
-export async function protectAdminRouteClient() {
+export async function protectAdminRouteClient(router: ReturnType<typeof useRouter>) {
     const supabase = createClient()
-    const router = useRouter()
 
     const { data: { user } } = await supabase.auth.getUser()
 

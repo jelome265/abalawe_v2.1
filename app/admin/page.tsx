@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
+import { protectAdminRoute } from '@/utils/admin-auth'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
     Package, Users, ShoppingCart, TrendingUp,
@@ -9,13 +9,8 @@ import {
 import { Button } from '@/components/ui/button'
 
 export default async function AdminDashboard() {
+    await protectAdminRoute()
     const supabase = await createClient()
-
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-        redirect('/admin/login')
-    }
 
     // Fetch stats using the working pattern
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

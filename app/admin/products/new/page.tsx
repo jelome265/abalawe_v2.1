@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import { protectAdminRouteClient } from '@/utils/admin-auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -26,6 +27,17 @@ export default function NewProductPage() {
     const [errors, setErrors] = useState<FormErrors>({})
     const [uploadingImages, setUploadingImages] = useState(false)
     const [imageUrls, setImageUrls] = useState<string[]>([])
+
+    // Check admin authentication on mount
+    useEffect(() => {
+        const checkAuth = async () => {
+            const isAuthorized = await protectAdminRouteClient()
+            if (!isAuthorized) {
+                return // Will be redirected by protectAdminRouteClient
+            }
+        }
+        checkAuth()
+    }, [])
 
     const generateSlug = (name: string): string => {
         return name

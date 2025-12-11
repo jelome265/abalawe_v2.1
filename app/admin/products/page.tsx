@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
+import { protectAdminRoute } from '@/utils/admin-auth'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { ProductActions } from './product-actions'
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/table"
 
 export default async function AdminProductsPage() {
+    await protectAdminRoute()
     const supabase = await createClient()
     const { data: products } = await supabase
         .from('products')

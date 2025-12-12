@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2, Clock, XCircle } from 'lucide-react'
+import { CancelOrderButton } from '@/components/order/cancel-order-button'
 
 // Correctly type the props for Next.js 15+ (params is a Promise)
 interface OrderPageProps {
@@ -124,13 +125,16 @@ export default async function OrderPage({ params }: OrderPageProps) {
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link href="/products">
                         <Button size="lg">Continue Shopping</Button>
                     </Link>
                     <Link href="/dashboard/orders">
                         <Button variant="outline" size="lg">View All Orders</Button>
                     </Link>
+                    {order.status === 'pending' && (
+                        <CancelOrderButton orderId={order.id} />
+                    )}
                 </div>
             </div>
         </div>

@@ -1,11 +1,14 @@
 import { Metadata } from 'next'
-import Image from 'next/image'
+
 import { notFound } from 'next/navigation'
-import { Heart, Share2 } from 'lucide-react'
+import { Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AddToCart } from './add-to-cart'
+import { AddToWishlist } from '@/components/product/add-to-wishlist'
+import { ProductGallery } from '@/components/product/product-gallery'
 import { createClient } from '@/utils/supabase/server'
 import { Database } from '@/types/database.types'
+import { BackButton } from '@/components/ui/back-button'
 
 type Product = Database['public']['Tables']['products']['Row']
 
@@ -62,24 +65,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
     return (
         <div className="container px-4 md:px-6 py-12">
+            <BackButton />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                 {/* Product Image Gallery */}
-                <div className="relative aspect-square overflow-hidden rounded-lg border bg-muted">
-                    {product.image_urls?.[0] ? (
-                        <Image
-                            src={product.image_urls[0]}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                            priority
-                            sizes="(max-width: 768px) 100vw, 50vw"
-                        />
-                    ) : (
-                        <div className="flex h-full items-center justify-center text-muted-foreground">
-                            No Image Available
-                        </div>
-                    )}
-                </div>
+
+                <ProductGallery images={product.image_urls} name={product.name} />
 
                 {/* Product Details */}
                 <div className="flex flex-col gap-6">
@@ -106,9 +96,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                         <AddToCart product={product} />
-                        <Button size="lg" variant="outline" aria-label="Add to Wishlist">
-                            <Heart className="h-5 w-5" />
-                        </Button>
+                        <AddToWishlist product={product} />
                         <Button size="lg" variant="ghost" aria-label="Share">
                             <Share2 className="h-5 w-5" />
                         </Button>

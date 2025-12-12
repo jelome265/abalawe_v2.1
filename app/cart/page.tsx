@@ -6,6 +6,8 @@ import { Trash2, Minus, Plus, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/providers/cart-provider'
 
+import { BackButton } from '@/components/ui/back-button'
+
 export default function CartPage() {
     const { items, removeItem, updateQuantity, cartTotal, isLoading } = useCart()
 
@@ -16,6 +18,7 @@ export default function CartPage() {
     if (items.length === 0) {
         return (
             <div className="container flex flex-col items-center justify-center py-24 gap-4">
+                <BackButton />
                 <h1 className="text-2xl font-bold">Your cart is empty</h1>
                 <p className="text-muted-foreground">Looks like you haven&apos;t added anything yet.</p>
                 <Link href="/products">
@@ -27,6 +30,7 @@ export default function CartPage() {
 
     return (
         <div className="container px-4 md:px-6 py-12">
+            <BackButton />
             <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

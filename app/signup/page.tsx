@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { BackButton } from '@/components/ui/back-button'
 
 export default function SignupPage() {
     const [email, setEmail] = useState('')
@@ -63,8 +64,11 @@ export default function SignupPage() {
 
     return (
         <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-12">
-            <div className="w-full max-w-md space-y-8 p-8 border rounded-lg shadow-sm bg-card">
-                <div className="text-center">
+            <div className="w-full max-w-md space-y-8 p-8 border rounded-lg shadow-sm bg-card relative">
+                <div className="absolute top-4 left-4">
+                    <BackButton />
+                </div>
+                <div className="text-center mt-8">
                     <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
                     <p className="text-sm text-muted-foreground mt-2">
                         Enter your email below to create your account
@@ -99,9 +103,7 @@ export default function SignupPage() {
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             required
                         />
-                        <p className="text-xs text-muted-foreground">
-                            Must contain uppercase, lowercase, number, and symbol.
-                        </p>
+
                     </div>
                     <div className="space-y-2">
                         <label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -115,6 +117,9 @@ export default function SignupPage() {
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             required
                         />
+                        <p className="text-xs text-red-500 font-medium">
+                            Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+                        </p>
                     </div>
 
                     {message && (

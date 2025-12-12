@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { BackButton } from '@/components/ui/back-button'
 
 export default function CheckoutPage() {
     const { items, cartTotal, clearCart } = useCart()
@@ -75,6 +76,7 @@ export default function CheckoutPage() {
 
     return (
         <div className="container px-4 md:px-6 py-12 max-w-2xl mx-auto">
+            <BackButton />
             <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
             <div className="rounded-lg border p-6 space-y-6">

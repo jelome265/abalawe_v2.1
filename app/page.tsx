@@ -7,13 +7,62 @@ import { createClient } from '@/utils/supabase/server'
 export default async function Home() {
   const supabase = await createClient()
 
-  // Fetch featured products from Supabase
+  // Fetch featured products (New Arrivals)
   const { data: featuredProducts } = await supabase
     .from('products')
     .select('*')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .limit(4)
+
+  // Fetch popular products (Based on sales)
+  // 1. Get recent order items
+  const { data: orderItems } = await supabase
+    .from('order_items')
+    .select('product_id')
+    .limit(200)
+  
+  // 2. Count frequencies
+  const productCounts: Record<string, number> = {}
+  orderItems?.forEach(item => {
+    if (item.product_id) {
+        productCounts[item.product_id] = (productCounts[item.product_id] || 0) + 1
+    }
+  })
+
+  // 3. Sort IDs by frequency
+  const popularProductIds = Object.entries(productCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 4)
+    .map(([id]) => id)
+
+  // 4. Fetch details for top products
+  let popularProducts = []
+  if (popularProductIds.length > 0) {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .in('id', popularProductIds)
+      
+      // Sort them back to match popularity order
+      if (data) {
+          popularProducts = popularProductIds
+            .map(id => data.find(p => p.id === id))
+            .filter(Boolean)
+      }
+  }
+
+  // Fallback: If no sales data, use random or just more featured ones (skipping first 4)
+  if (popularProducts.length === 0 && featuredProducts) {
+      // Just take the next 4 (mock logic for empty store)
+       const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('price', { ascending: false }) // "Premium" popular
+        .limit(4)
+       if (data) popularProducts = data
+  }
 
   return (
     <div className="flex flex-col gap-12 pb-12">

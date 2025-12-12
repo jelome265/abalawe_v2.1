@@ -6,6 +6,7 @@ import { Database } from '@/types/database.types'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { CancelOrderButton } from './cancel-order-button'
 
 
 type Order = Database['public']['Tables']['orders']['Row']
@@ -54,21 +55,24 @@ export function OrderActions({ order }: OrderActionsProps) {
             </Link>
 
             {order.status === 'pending' && (
-                <Button
-                    size="sm"
-                    onClick={handlePayNow}
-                    disabled={isLoading}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                    {isLoading ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Loading...
-                        </>
-                    ) : (
-                        'Pay Now'
-                    )}
-                </Button>
+                <>
+                    <Button
+                        size="sm"
+                        onClick={handlePayNow}
+                        disabled={isLoading}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Loading...
+                            </>
+                        ) : (
+                            'Pay Now'
+                        )}
+                    </Button>
+                    <CancelOrderButton orderId={order.id} />
+                </>
             )}
         </div>
     )

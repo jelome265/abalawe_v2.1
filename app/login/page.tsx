@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
+import { BackButton } from '@/components/ui/back-button'
 
 export default function LoginPage() {
     const [email, setEmail] = useState('')
@@ -49,8 +50,11 @@ export default function LoginPage() {
 
     return (
         <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-12">
-            <div className="w-full max-w-md space-y-8 p-8 border rounded-lg shadow-sm bg-card">
-                <div className="text-center">
+            <div className="w-full max-w-md space-y-8 p-8 border rounded-lg shadow-sm bg-card relative">
+                <div className="absolute top-4 left-4">
+                    <BackButton />
+                </div>
+                <div className="text-center mt-8">
                     <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
                     <p className="text-sm text-muted-foreground mt-2">
                         Sign in to your account to continue
@@ -83,6 +87,11 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
+                        <div className="flex justify-end">
+                            <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+                                Forgot password?
+                            </Link>
+                        </div>
                     </div>
 
                     {message && (

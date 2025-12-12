@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ShieldAlert, Loader2 } from 'lucide-react'
 
 export default function AdminLoginPage() {
-    const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -61,8 +59,8 @@ export default function AdminLoginPage() {
             }
 
             // Success - redirect to admin dashboard
-            router.push('/admin')
-            router.refresh()
+            // Using window.location.href to ensure full state reset and robust redirect
+            window.location.href = '/admin'
         } catch (err) {
             console.error('Login error:', err)
             setError('An error occurred. Please try again.')

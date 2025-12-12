@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { User } from 'lucide-react'
+import { User, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/utils/supabase/server'
 import { MobileMenu } from './mobile-menu'
@@ -33,6 +33,11 @@ export default async function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
+                    <Link href="/wishlist">
+                        <Button variant="ghost" size="icon" aria-label="Wishlist" className="hidden sm:flex">
+                            <Heart className="h-5 w-5" />
+                        </Button>
+                    </Link>
                     <CartButton />
                     <ModeToggle />
 

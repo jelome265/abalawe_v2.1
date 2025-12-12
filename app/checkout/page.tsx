@@ -5,23 +5,27 @@ import { useCart } from '@/components/providers/cart-provider'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function CheckoutPage() {
-    const { items, cartTotal } = useCart()
-    const [isLoading, setIsLoading] = useState(false)
+    const { items, cartTotal, clearCart } = useCart()
+    const [isProcessing, setIsProcessing] = useState(false)
     const [message, setMessage] = useState<string | null>(null)
     const supabase = createClient()
     const router = useRouter()
 
     const handlePayment = async () => {
-        setIsLoading(true)
+        setIsProcessing(true)
         setMessage(null)
 
         try {
             const { data: { user } } = await supabase.auth.getUser()
 
             if (!user) {
-                router.push('/login?next=/checkout')
+                toast.error("Authentication required", {
+                    description: "Please sign in to complete your purchase"
+                })
+                router.push('/login?redirect=/checkout')
                 return
             }
 
@@ -47,15 +51,21 @@ export default function CheckoutPage() {
 
             // Redirect to PayChangu Checkout URL
             if (data.checkout_url) {
+                clearCart()
                 window.location.href = data.checkout_url
             } else {
                 throw new Error('No checkout URL returned')
             }
 
         } catch (error: unknown) {
-            console.error(error)
-            setMessage(error instanceof Error ? error.message : 'An error occurred')
-            setIsLoading(false)
+            console.error('Payment error:', error)
+            const errorMsg = error instanceof Error ? error.message : "Something went wrong"
+            setMessage(errorMsg)
+            toast.error("Checkout failed", {
+                description: errorMsg
+            })
+        } finally {
+            setIsProcessing(false)
         }
     }
 
@@ -85,12 +95,12 @@ export default function CheckoutPage() {
                 )}
 
                 <Button
-                    className="w-full"
+                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold"
                     size="lg"
                     onClick={handlePayment}
-                    disabled={isLoading}
+                    disabled={isProcessing}
                 >
-                    {isLoading ? 'Processing...' : 'Pay with PayChangu'}
+                    {isProcessing ? 'Processing...' : 'Pay with PayChangu'}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">

@@ -56,15 +56,15 @@ export function ProductCard({ product }: ProductCardProps) {
                 </div>
                 <div className="mt-auto flex items-center justify-between gap-1">
                     <span className="text-sm sm:text-base font-bold">
-                        {new Intl.NumberFormat('en-US', {
+                        {new Intl.NumberFormat('en-MW', {
                             style: 'currency',
-                            currency: product.currency || 'USD',
+                            currency: 'MWK',
                         }).format(product.price)}
                     </span>
                     <Button
                         size="sm"
                         variant="secondary"
-                        className="h-7 px-2 sm:h-9 sm:px-3 z-10 relative" // z-10 to ensure it's clickable above the Link if necessary, though nesting structure handles it usually.
+                        className="h-7 px-2 sm:h-9 sm:px-3 z-10 relative bg-[#00B9FD] hover:bg-[#00B9FD]/90 text-white border-none" // z-10 to ensure it's clickable above the Link if necessary, though nesting structure handles it usually.
                         onClick={handleAddToCart}
                         disabled={product.stock_quantity === 0}
                     >

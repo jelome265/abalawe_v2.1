@@ -118,7 +118,6 @@ export async function POST(req: NextRequest) {
         const txRef = `tx-${order.id}-${Date.now()}`
 
         // Initiate payment with PayChangu
-        console.log('Initiating PayChangu payment with ref:', txRef)
         const paymentResponse = await initiatePayment({
             amount: totalAmount,
             currency: 'MWK',

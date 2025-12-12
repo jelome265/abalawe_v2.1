@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/utils/supabase/server'
 import { MobileMenu } from './mobile-menu'
 import { CartButton } from './cart-button'
+import { ModeToggle } from '@/components/ui/mode-toggle'
 
 export default async function Navbar() {
     const supabase = await createClient()
@@ -33,6 +34,7 @@ export default async function Navbar() {
 
                 <div className="flex items-center gap-4">
                     <CartButton />
+                    <ModeToggle />
 
                     {user ? (
                         <Link href="/dashboard">

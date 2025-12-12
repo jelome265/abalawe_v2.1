@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { OrderActions } from '@/components/order/order-actions'
 import {
     Table,
     TableBody,
@@ -65,17 +66,13 @@ export default async function OrdersPage() {
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-right font-medium">
-                                        {new Intl.NumberFormat('en-US', {
+                                        {new Intl.NumberFormat('en-MW', {
                                             style: 'currency',
-                                            currency: order.currency || 'USD'
+                                            currency: order.currency || 'MWK'
                                         }).format(order.total_amount)}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <Link href={`/dashboard/orders/${order.id}`}>
-                                            <Button variant="ghost" size="sm">
-                                                View
-                                            </Button>
-                                        </Link>
+                                        <OrderActions order={order} />
                                     </TableCell>
                                 </TableRow>
                             ))

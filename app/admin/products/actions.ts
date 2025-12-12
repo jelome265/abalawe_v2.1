@@ -39,7 +39,7 @@ export async function createProduct(prevState: CreateProductState, formData: For
         const slug = formData.get('slug') as string
         const description = formData.get('description') as string
         const price = parseFloat(formData.get('price') as string)
-        const currency = formData.get('currency') as string || 'USD'
+        const currency = formData.get('currency') as string || 'MWK'
         const stockQuantity = parseInt(formData.get('stock_quantity') as string) || 0
         const isActive = formData.get('is_active') === 'on'
         const category = formData.get('category') as string
@@ -152,7 +152,7 @@ export async function updateProduct(productId: string, formData: FormData) {
         const slug = formData.get('slug') as string
         const description = formData.get('description') as string
         const price = parseFloat(formData.get('price') as string)
-        const currency = formData.get('currency') as string || 'USD'
+        const currency = formData.get('currency') as string || 'MWK'
         const stockQuantity = parseInt(formData.get('stock_quantity') as string) || 0
         const isActive = formData.get('is_active') === 'on'
         const category = formData.get('category') as string

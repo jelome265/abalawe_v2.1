@@ -33,7 +33,7 @@ export function AddToCart({ product }: AddToCartProps) {
     return (
         <Button
             size="lg"
-            className="flex-1"
+            className="flex-1 bg-[#00B9FD] hover:bg-[#00B9FD]/90 text-white border-none"
             disabled={product.stock_quantity === 0 || loading}
             onClick={handleAddToCart}
         >

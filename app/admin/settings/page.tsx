@@ -131,7 +131,7 @@ export default function AdminSettingsPage() {
                                 id="default-currency"
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                             >
-                                <option value="USD">USD - US Dollar</option>
+                                <option value="MWK">MWK - Malawi Kwacha</option>
                                 <option value="MWK">MWK - Malawian Kwacha</option>
                                 <option value="ZMW">ZMW - Zambian Kwacha</option>
                                 <option value="EUR">EUR - Euro</option>

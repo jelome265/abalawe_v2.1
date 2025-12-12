@@ -285,9 +285,9 @@ export default function NewProductPage() {
                                     id="currency"
                                     name="currency"
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                    defaultValue="USD"
+                                    defaultValue="MWK"
                                 >
-                                    <option value="USD">USD</option>
+                                    <option value="MWK">MWK - Malawi Kwacha</option>
                                     <option value="EUR">EUR</option>
                                     <option value="GBP">GBP</option>
                                     <option value="ZMW">ZMW</option>

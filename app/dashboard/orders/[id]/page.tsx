@@ -81,9 +81,9 @@ export default async function OrderPage({ params }: OrderPageProps) {
                             <div className="text-right">
                                 <p className="text-sm font-medium text-muted-foreground">Total Amount</p>
                                 <p className="text-xl font-bold">
-                                    {new Intl.NumberFormat('en-US', {
+                                    {new Intl.NumberFormat('en-MW', {
                                         style: 'currency',
-                                        currency: order.currency || 'USD'
+                                        currency: order.currency || 'MWK'
                                     }).format(order.total_amount)}
                                 </p>
                             </div>
@@ -113,9 +113,9 @@ export default async function OrderPage({ params }: OrderPageProps) {
                                         </div>
                                     </div>
                                     <p className="font-medium">
-                                        {new Intl.NumberFormat('en-US', {
+                                        {new Intl.NumberFormat('en-MW', {
                                             style: 'currency',
-                                            currency: order.currency || 'USD'
+                                            currency: order.currency || 'MWK'
                                         }).format(item.price_at_purchase * item.quantity)}
                                     </p>
                                 </div>

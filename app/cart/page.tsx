@@ -55,9 +55,9 @@ export default function CartPage() {
                                         <p className="text-sm text-muted-foreground">{item.product.category}</p>
                                     </div>
                                     <p className="font-medium">
-                                        {new Intl.NumberFormat('en-US', {
+                                        {new Intl.NumberFormat('en-MW', {
                                             style: 'currency',
-                                            currency: item.product.currency || 'USD',
+                                            currency: item.product.currency || 'MWK',
                                         }).format(item.product.price * item.quantity)}
                                     </p>
                                 </div>
@@ -105,9 +105,9 @@ export default function CartPage() {
                         <div className="flex justify-between mb-2">
                             <span className="text-muted-foreground">Subtotal</span>
                             <span>
-                                {new Intl.NumberFormat('en-US', {
+                                {new Intl.NumberFormat('en-MW', {
                                     style: 'currency',
-                                    currency: 'USD',
+                                    currency: 'MWK',
                                 }).format(cartTotal)}
                             </span>
                         </div>
@@ -119,9 +119,9 @@ export default function CartPage() {
                         <div className="border-t my-4 pt-4 flex justify-between font-bold">
                             <span>Total</span>
                             <span>
-                                {new Intl.NumberFormat('en-US', {
+                                {new Intl.NumberFormat('en-MW', {
                                     style: 'currency',
-                                    currency: 'USD',
+                                    currency: 'MWK',
                                 }).format(cartTotal)}
                             </span>
                         </div>

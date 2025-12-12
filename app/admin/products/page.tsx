@@ -52,9 +52,9 @@ export default async function AdminProductsPage() {
                                 <TableCell className="font-medium">{product.name}</TableCell>
                                 <TableCell>{product.category}</TableCell>
                                 <TableCell>
-                                    {new Intl.NumberFormat('en-US', {
+                                    {new Intl.NumberFormat('en-MW', {
                                         style: 'currency',
-                                        currency: product.currency,
+                                        currency: product.currency || 'MWK',
                                     }).format(product.price)}
                                 </TableCell>
                                 <TableCell>{product.stock_quantity}</TableCell>

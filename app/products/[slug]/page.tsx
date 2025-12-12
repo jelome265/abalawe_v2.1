@@ -87,9 +87,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{product.name}</h1>
                         <div className="mt-4 flex items-end gap-4">
                             <span className="text-3xl font-bold">
-                                {new Intl.NumberFormat('en-US', {
+                                {new Intl.NumberFormat('en-MW', {
                                     style: 'currency',
-                                    currency: product.currency || 'USD',
+                                    currency: 'MWK',
                                 }).format(product.price)}
                             </span>
                             {(product.stock_quantity && product.stock_quantity > 0) ? (

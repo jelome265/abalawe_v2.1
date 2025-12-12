@@ -1,11 +1,31 @@
 @import "tailwindcss";
 
-/* -----------------------------------------
-   Root Theme Variables (Light Mode)
------------------------------------------- */
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* Whisper Gray Background */
+    --background: 0 0% 96.1%; /* #f5f5f5 */
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -14,18 +34,19 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Primary Brand — Apple Green (Shopify style) */
-    --primary: 130 70% 45%;
+    /* Serene Gradient Palette - Light Mode */
+    /* Primary: #03a443 (Green) */
+    --primary: 144 96% 33%; 
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary */
-    --secondary: 263 70% 50%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary: #6de180 (Light Green) */
+    --secondary: 130 68% 65%; 
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 130 68% 96%; /* Very light tint of secondary */
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,7 +54,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 130 70% 45%;
+    --ring: 144 96% 33%;
 
     --radius: 0.5rem;
   }
@@ -42,33 +63,37 @@
      Dark Mode Theme Variables
   ------------------------------------------ */
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Rich Navy Background #01102F */
+    /* HSL approx: 221 96% 9% */
+    --background: 221 96% 9%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 221 40% 13%; /* Slightly lighter than bg */
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 221 96% 9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 130 70% 60%;
-    --primary-foreground: 222.2 84% 4.9%;
+    /* Primary: #03a443 (Green) - Consistent across modes */
+    --primary: 144 96% 33%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 263 60% 60%;
+    /* Secondary: #6de180 (Light Green) */
+    --secondary: 130 68% 65%;
     --secondary-foreground: 222.2 84% 4.9%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 217 33% 17%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 217 33% 17%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 130 70% 60%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 144 96% 33%;
   }
 }
 

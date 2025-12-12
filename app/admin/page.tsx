@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
     const stats = [
         {
             title: 'Total Revenue',
-            value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalRevenue),
+            value: new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(totalRevenue),
             change: 'From paid orders',
             icon: DollarSign,
             color: 'text-green-600',
@@ -180,9 +180,9 @@ export default async function AdminDashboard() {
                                                     {order.status}
                                                 </span>
                                                 <span className="font-medium">
-                                                    {new Intl.NumberFormat('en-US', {
+                                                    {new Intl.NumberFormat('en-MW', {
                                                         style: 'currency',
-                                                        currency: order.currency || 'USD'
+                                                        currency: order.currency || 'MWK'
                                                     }).format(order.total_amount)}
                                                 </span>
                                             </div>
@@ -222,9 +222,9 @@ export default async function AdminDashboard() {
                                             </p>
                                         </div>
                                         <span className="text-sm font-medium">
-                                            {new Intl.NumberFormat('en-US', {
+                                            {new Intl.NumberFormat('en-MW', {
                                                 style: 'currency',
-                                                currency: 'USD'
+                                                currency: 'MWK'
                                             }).format(product.price)}
                                         </span>
                                     </div>

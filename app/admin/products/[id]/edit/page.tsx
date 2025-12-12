@@ -27,7 +27,7 @@ export default async function EditProductPage({ params }: PageProps) {
         slug: product.slug,
         description: product.description,
         price: product.price,
-        currency: product.currency || 'USD', // Default to USD if null
+        currency: product.currency || 'MWK', // Default to MWK if null
         stock_quantity: product.stock_quantity || 0,
         is_active: product.is_active || false,
         category: product.category,

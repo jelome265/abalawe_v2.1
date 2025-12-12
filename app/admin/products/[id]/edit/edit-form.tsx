@@ -244,7 +244,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
                                     defaultValue={product.currency}
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 >
-                                    <option value="USD">USD</option>
+                                    <option value="MWK">MWK - Malawi Kwacha</option>
                                     <option value="EUR">EUR</option>
                                     <option value="GBP">GBP</option>
                                     <option value="ZMW">ZMW</option>

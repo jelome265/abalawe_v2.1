@@ -1,8 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { initiatePayment } from '@/utils/paychangu'
 import { z } from 'zod'
-import { Database } from '@/types/database.types'
+import { Database, Tables } from '@/types/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import '@/utils/env' // Validate environment variables
 import { rateLimitMiddleware } from '@/utils/rate-limit'
@@ -20,12 +21,16 @@ export async function POST(req: NextRequest) {
     const rateLimitResult = rateLimitMiddleware(req)
     if (rateLimitResult) return rateLimitResult
 
+    // Regular client for Auth
     const supabase: SupabaseClient<Database> = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    // Admin client for DB operations (bypass RLS)
+    const supabaseAdmin = createAdminClient()
 
     try {
         const body = await req.json()
@@ -36,15 +41,17 @@ export async function POST(req: NextRequest) {
         }
 
         // Fetch products to calculate total and check stock
-        // Fetch products to calculate total and check stock
-        const { data: products, error: productsError } = await supabase
+        const { data: productsData, error: productsError } = await supabaseAdmin // Use admin to ensure we see all products
             .from('products')
             .select('id, price, name, stock_quantity')
             .in('id', items.map(item => item.id))
 
-        if (productsError || !products) {
+        if (productsError || !productsData) {
             throw new Error('Failed to fetch products')
         }
+
+        // Explicitly type products to ensure TS knows the shape
+        const products = productsData as Pick<Tables<'products'>, 'id' | 'price' | 'name' | 'stock_quantity'>[]
 
         // Calculate total amount and validate stock
         let totalAmount = 0
@@ -67,7 +74,8 @@ export async function POST(req: NextRequest) {
         }
         // Create Order in Supabase (Server-side)
         console.log('Attempting to create order for user:', user.id)
-        const { data: order, error: orderError } = await supabase
+
+        const { data: orderData, error: orderError } = await supabaseAdmin
             .from('orders')
             .insert({
                 user_id: user.id,
@@ -78,10 +86,12 @@ export async function POST(req: NextRequest) {
             .select()
             .single()
 
-        if (orderError || !order) {
+        if (orderError || !orderData) {
             console.error('Order creation error:', orderError)
-            throw new Error('Failed to create order')
+            throw new Error(`Failed to create order: ${orderError?.message || 'Unknown error'}`)
         }
+
+        const order = orderData as Tables<'orders'>
 
         // Create Order Items
         const orderItemsData = items.map(item => {
@@ -94,7 +104,7 @@ export async function POST(req: NextRequest) {
             }
         })
 
-        const { error: itemsError } = await supabase
+        const { error: itemsError } = await supabaseAdmin
             .from('order_items')
             .insert(orderItemsData)
 
@@ -116,18 +126,18 @@ export async function POST(req: NextRequest) {
             firstName: user.user_metadata.full_name?.split(' ')[0] || 'Customer',
             lastName: user.user_metadata.full_name?.split(' ')[1] || 'User',
             callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/paychangu`,
-            returnUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/orders/${order!.id}`,
+            returnUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/orders/${order.id}`,
             txRef,
         })
 
         if (paymentResponse.status === 'success' || paymentResponse.status === 'initiated') {
             // Update order with PayChangu transaction reference
-            await supabase
+            await supabaseAdmin
                 .from('orders')
                 .update({
                     payment_transaction_id: txRef
                 })
-                .eq('id', order!.id)
+                .eq('id', order.id)
 
             return NextResponse.json({ checkout_url: paymentResponse.data.checkout_url })
         } else {

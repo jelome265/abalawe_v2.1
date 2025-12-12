@@ -1,48 +1,20 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/product/product-card'
+import { createClient } from '@/utils/supabase/server'
 
-// Mock data for now - in a real app this would come from Supabase
-const FEATURED_PRODUCTS = [
-  {
-    id: '1',
-    name: 'Premium Leather Backpack',
-    slug: 'premium-leather-backpack',
-    price: 129.99,
-    currency: 'USD',
-    image_urls: ['https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80'],
-    category: 'Accessories',
-  },
-  {
-    id: '2',
-    name: 'Minimalist Watch',
-    slug: 'minimalist-watch',
-    price: 199.50,
-    currency: 'USD',
-    image_urls: ['https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80'],
-    category: 'Watches',
-  },
-  {
-    id: '3',
-    name: 'Wireless Noise-Cancelling Headphones',
-    slug: 'wireless-headphones',
-    price: 249.00,
-    currency: 'USD',
-    image_urls: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80'],
-    category: 'Electronics',
-  },
-  {
-    id: '4',
-    name: 'Organic Cotton T-Shirt',
-    slug: 'organic-cotton-tshirt',
-    price: 35.00,
-    currency: 'USD',
-    image_urls: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80'],
-    category: 'Apparel',
-  },
-]
+export default async function Home() {
+  const supabase = await createClient()
 
-export default function Home() {
+  // Fetch featured products from Supabase
+  const { data: featuredProducts } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(4)
+
   return (
     <div className="flex flex-col gap-12 pb-12">
       {/* Hero Section */}
@@ -76,9 +48,12 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
-          {FEATURED_PRODUCTS.map((product) => (
+          {featuredProducts?.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+          {!featuredProducts?.length && (
+            <p className="col-span-full text-center text-muted-foreground">No featured products found.</p>
+          )}
         </div>
       </section>
 
@@ -86,14 +61,34 @@ export default function Home() {
       <section className="container px-4 md:px-6">
         <h2 className="text-3xl font-bold tracking-tight mb-8">Shop by Category</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {['Electronics', 'Apparel', 'Accessories'].map((category) => (
+          {[
+            {
+              name: 'Electronics',
+              image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=800&q=80',
+            },
+            {
+              name: 'Apparel',
+              image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+            },
+            {
+              name: 'Accessories',
+              image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=800&q=80',
+            },
+          ].map((category) => (
             <Link
-              key={category}
-              href={`/categories/${category.toLowerCase()}`}
+              key={category.name}
+              href={`/categories/${category.name.toLowerCase()}`}
               className="group relative h-64 overflow-hidden rounded-lg bg-muted"
             >
+              <Image
+                src={category.image}
+                alt={category.name}
+                fill
+                className="object-cover transition-transform group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition-colors group-hover:bg-black/50">
-                <h3 className="text-2xl font-bold text-white">{category}</h3>
+                <h3 className="text-2xl font-bold text-white">{category.name}</h3>
               </div>
             </Link>
           ))}
